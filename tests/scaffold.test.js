@@ -19,7 +19,8 @@ test("manifest has required mobile app fields", () => {
 
 test("service worker uses named app shell cache", () => {
   const sw = readFileSync("service-worker.js", "utf8");
-  assert.match(sw, /toeic-focus-shell-v1/);
+  assert.match(sw, /toeic-focus-shell-v2/);
+  assert.match(sw, /src\/lib\/speech\.js/);
   assert.match(sw, /install/);
   assert.match(sw, /fetch/);
 });

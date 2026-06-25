@@ -1,10 +1,11 @@
-const CACHE_NAME = "toeic-focus-shell-v1";
+const CACHE_NAME = "toeic-focus-shell-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./src/styles.css",
-  "./src/app.js"
+  "./src/app.js",
+  "./src/lib/speech.js"
 ];
 
 self.addEventListener("install", (event) => {

@@ -1,6 +1,7 @@
 import { buildDailyTask, validateQuestionBank } from "./lib/content.js";
 import { completeDailyTask, loadProgress, recordAttempt, saveProgress } from "./lib/progress.js";
 import { recommendDifficulty, summarizeWeek } from "./lib/scoring.js";
+import { primeSpeechSynthesis, speakEnglishWord, speechButtonLabels } from "./lib/speech.js";
 import { getVocabularyFamily, getVocabularyParts } from "./lib/vocabulary-meta.js";
 import {
   renderAppShell,
@@ -78,7 +79,10 @@ function bindEvents() {
     const action = event.target.closest("[data-action]")?.dataset.action;
     if (action === "start-focus") startFocus();
     if (action === "next-question") nextQuestion();
-    if (action === "speak-word") speakWord(event.target.closest("[data-word]")?.dataset.word);
+    if (action === "speak-word") {
+      const button = event.target.closest("[data-word]");
+      speakWord(button?.dataset.word, button);
+    }
     if (action === "reload") window.location.reload();
 
     const choice = event.target.closest("[data-choice-index]");
@@ -86,17 +90,34 @@ function bindEvents() {
   });
 }
 
-function speakWord(word) {
-  if (!word) return;
-  if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
-    window.alert("這個瀏覽器暫時不支援讀音功能。");
+function setSpeakButtonStatus(button, status) {
+  if (!button) return;
+  if (status === "loading" || status === "playing") {
+    button.textContent = speechButtonLabels.loading;
+    button.disabled = true;
     return;
   }
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(word);
-  utterance.lang = "en-US";
-  utterance.rate = 0.85;
-  window.speechSynthesis.speak(utterance);
+  if (status === "unsupported") {
+    button.textContent = speechButtonLabels.unsupported;
+    button.disabled = true;
+    return;
+  }
+  if (status === "error") {
+    button.textContent = speechButtonLabels.error;
+    button.disabled = false;
+    window.setTimeout(() => {
+      button.textContent = speechButtonLabels.ready;
+    }, 1400);
+    return;
+  }
+  button.textContent = speechButtonLabels.ready;
+  button.disabled = false;
+}
+
+function speakWord(word, button) {
+  speakEnglishWord(word, window, {
+    onStatus: (status) => setSpeakButtonStatus(button, status)
+  });
 }
 
 function startFocus() {
@@ -272,6 +293,7 @@ function registerServiceWorker() {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./service-worker.js");
   }
+  primeSpeechSynthesis(window);
 }
 
 init();
