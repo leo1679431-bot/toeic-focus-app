@@ -4,6 +4,7 @@ import { extname, join, normalize } from "node:path";
 
 const root = process.cwd();
 const port = Number(process.env.PORT || 4173);
+const host = process.env.HOST || "127.0.0.1";
 const types = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
@@ -30,6 +31,6 @@ createServer((request, response) => {
   }
   response.writeHead(200, { "content-type": types[extname(filePath)] || "application/octet-stream" });
   createReadStream(filePath).pipe(response);
-}).listen(port, "127.0.0.1", () => {
-  console.log(`TOEIC Focus app running at http://127.0.0.1:${port}`);
+}).listen(port, host, () => {
+  console.log(`TOEIC Focus app running at http://${host}:${port}`);
 });

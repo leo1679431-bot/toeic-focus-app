@@ -10,6 +10,14 @@ npm run serve
 
 Open `http://127.0.0.1:4173`.
 
+To test from an iPhone or iPad on the same Wi-Fi:
+
+```bash
+HOST=0.0.0.0 npm run serve
+```
+
+Then open `http://<your-mac-ip>:4173` on the iPhone or iPad.
+
 ## Study Flow
 
 - Today: 20-30 minute task
