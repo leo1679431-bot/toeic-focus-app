@@ -96,6 +96,18 @@ button.secondary {
   background: var(--accent-soft);
 }
 
+.choice.is-correct {
+  border-color: #2f7d6b;
+  background: #e4f3ee;
+  color: #1f5f50;
+}
+
+.choice.is-wrong {
+  border-color: var(--danger);
+  background: #f8e7e4;
+  color: #8f2f2f;
+}
+
 .eyebrow {
   margin: 0 0 8px;
   color: var(--muted);
@@ -151,6 +163,83 @@ h2 {
   padding: 4px 8px;
   font-size: 12px;
   font-weight: 700;
+}
+
+.correct-answer-line {
+  margin: 12px 0 6px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.answer-key {
+  margin: 0 0 14px;
+  color: var(--ink);
+  font-size: 30px;
+  line-height: 1.12;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.speak-button {
+  min-height: 38px;
+  margin: -4px 0 14px;
+}
+
+.pos-list {
+  display: grid;
+  gap: 6px;
+  margin: -4px 0 14px;
+}
+
+.pos-list p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.pos-badge {
+  min-width: 76px;
+  border-radius: 999px;
+  background: #eef0ec;
+  color: var(--ink);
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.word-family {
+  display: grid;
+  gap: 7px;
+  margin: 0 0 14px;
+}
+
+.word-family-title {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.word-family-row {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  gap: 6px 10px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.word-family-row strong {
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.word-family-row span:last-child {
+  grid-column: 2;
 }
 
 .focus-screen {

@@ -1,6 +1,7 @@
 import { buildDailyTask, validateQuestionBank } from "./lib/content.js";
 import { completeDailyTask, loadProgress, recordAttempt, saveProgress } from "./lib/progress.js";
 import { recommendDifficulty, summarizeWeek } from "./lib/scoring.js";
+import { getVocabularyFamily, getVocabularyParts } from "./lib/vocabulary-meta.js";
 import {
   renderAppShell,
   renderFocusQuestion,
@@ -50,11 +51,25 @@ function bindEvents() {
     const action = event.target.closest("[data-action]")?.dataset.action;
     if (action === "start-focus") startFocus();
     if (action === "next-question") nextQuestion();
+    if (action === "speak-word") speakWord(event.target.closest("[data-word]")?.dataset.word);
     if (action === "reload") window.location.reload();
 
     const choice = event.target.closest("[data-choice-index]");
     if (choice) answerCurrentQuestion(Number(choice.dataset.choiceIndex));
   });
+}
+
+function speakWord(word) {
+  if (!word) return;
+  if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
+    window.alert("這個瀏覽器暫時不支援讀音功能。");
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = "en-US";
+  utterance.rate = 0.85;
+  window.speechSynthesis.speak(utterance);
 }
 
 function startFocus() {
@@ -95,6 +110,8 @@ function makeVocabularyQuestion(item, index) {
     choices,
     answer: correctSlot,
     category: "vocabulary",
+    partsOfSpeech: getVocabularyParts(item),
+    wordFamily: getVocabularyFamily(item),
     explanationZh: `${item.word} = ${item.zh}`,
     explanationJa: item.ja
   };

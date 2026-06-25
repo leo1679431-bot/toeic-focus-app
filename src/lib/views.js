@@ -14,6 +14,53 @@ function formatPrompt(value) {
   return escapeHtml(value).replaceAll("\n", "<br>");
 }
 
+function answerLabel(index, choices) {
+  if (!Number.isInteger(index) || !choices[index]) return "";
+  return `${String.fromCharCode(65 + index)}. ${choices[index]}`;
+}
+
+function choiceClass(session, index) {
+  const classes = ["choice"];
+  if (session.selected === index) classes.push("is-selected");
+  if (session.answered && session.item.answer === index) classes.push("is-correct");
+  if (session.answered && session.selected === index && session.selected !== session.item.answer) {
+    classes.push("is-wrong");
+  }
+  return classes.join(" ");
+}
+
+function renderPartsOfSpeech(item) {
+  if (!Array.isArray(item.partsOfSpeech) || item.partsOfSpeech.length === 0) return "";
+  return `
+    <div class="pos-list" aria-label="Part of speech">
+      ${item.partsOfSpeech.map((entry) => `
+        <p><span class="pos-badge">${escapeHtml(entry.part)}</span><span>${escapeHtml(entry.zh)} / ${escapeHtml(entry.ja)}</span></p>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderWordFamily(item) {
+  if (!Array.isArray(item.wordFamily) || item.wordFamily.length === 0) return "";
+  return `
+    <div class="word-family" aria-label="Word family">
+      <p class="word-family-title">Word family</p>
+      ${item.wordFamily.map((entry) => `
+        <div class="word-family-row">
+          <span class="pos-badge">${escapeHtml(entry.part)}</span>
+          <strong>${escapeHtml(entry.form)}</strong>
+          <span>${escapeHtml(entry.zh)} / ${escapeHtml(entry.ja)}</span>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function renderPronunciationButton(item) {
+  if (item.section !== "vocabulary" || !item.word) return "";
+  return `<button type="button" class="speak-button secondary" data-action="speak-word" data-word="${escapeHtml(item.word)}">聽讀音</button>`;
+}
+
 export function renderAppShell(activeTab, bodyHtml) {
   const tabs = [
     ["today", "今日"],
@@ -67,6 +114,8 @@ export function renderFocusQuestion(session) {
   const answeredClass = session.answered ? "has-answer" : "";
   const prompt = item.prompt || item.word || item.passage;
   const choices = item.choices || [];
+  const correctAnswer = answerLabel(item.answer, choices);
+  const keyAnswer = item.section === "vocabulary" ? item.word : choices[item.answer] || item.word || "";
   return `
     <section class="app-shell focus-screen">
       <p class="eyebrow">Focus Mode · ${session.index + 1}/${session.total}</p>
@@ -75,13 +124,18 @@ export function renderFocusQuestion(session) {
           <h1>${formatPrompt(prompt)}</h1>
           <div class="choice-list">
             ${choices.map((choice, index) => `
-              <button type="button" class="choice ${session.selected === index ? "is-selected" : ""}" data-choice-index="${index}">${String.fromCharCode(65 + index)}. ${escapeHtml(choice)}</button>
+              <button type="button" class="${choiceClass(session, index)}" data-choice-index="${index}">${String.fromCharCode(65 + index)}. ${escapeHtml(choice)}</button>
             `).join("")}
           </div>
         </article>
         ${session.answered ? `
           <aside class="panel">
-            <h2>${session.isCorrect ? "正解" : "再看一次"}</h2>
+            <h2>${session.isCorrect ? "正解" : "不正解"}</h2>
+            <p class="correct-answer-line">正解：${escapeHtml(correctAnswer)}</p>
+            <p class="answer-key">${escapeHtml(keyAnswer)}</p>
+            ${renderPronunciationButton(item)}
+            ${renderPartsOfSpeech(item)}
+            ${renderWordFamily(item)}
             <p>${escapeHtml(session.explanationZh || "")}</p>
             <p class="muted">${escapeHtml(session.explanationJa || "")}</p>
             <p class="tag">${escapeHtml(item.category || item.section)}</p>
