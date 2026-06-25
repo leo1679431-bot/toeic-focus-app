@@ -66,6 +66,39 @@ test("Focus question view marks wrong selected answer and correct answer", () =>
   assert.match(html, /class="answer-key">during/);
 });
 
+test("Focus question view explains why the selected and other choices are unsuitable", () => {
+  const html = renderFocusQuestion({
+    index: 0,
+    total: 1,
+    answered: true,
+    selected: 0,
+    isCorrect: false,
+    explanationZh: "assistant 前面需要形容詞，reliable 是可靠的。",
+    explanationJa: "名詞 assistant を修飾する形容詞が必要です。",
+    item: {
+      id: "g004",
+      section: "grammar",
+      category: "word-form",
+      prompt: "The manager is looking for a ___ assistant.",
+      choices: ["rely", "reliably", "reliable", "reliability"],
+      answer: 2,
+      choiceExplanations: [
+        { zh: "「rely」係動詞，唔可以直接修飾 assistant。", ja: "rely は動詞なので assistant を直接修飾できません。" },
+        { zh: "「reliably」係副詞，主要修飾動詞，不是名詞 assistant。", ja: "reliably は副詞なので名詞 assistant には合いません。" },
+        { zh: "正解。reliable 係形容詞，可以修飾 assistant。", ja: "正解です。reliable は形容詞です。" },
+        { zh: "「reliability」係名詞，位置不合。", ja: "reliability は名詞なので位置に合いません。" }
+      ]
+    }
+  });
+  assert.match(html, /點解錯/);
+  assert.match(html, /你揀咗：A\. rely/);
+  assert.match(html, /唔可以直接修飾 assistant/);
+  assert.match(html, /每個選項點解啱／唔啱/);
+  assert.match(html, /正解。reliable 係形容詞/);
+  assert.match(html, /class="option-reason-row is-correct/);
+  assert.match(html, /class="option-reason-row is-selected-wrong/);
+});
+
 test("Focus question view marks correct selected answer in green", () => {
   const html = renderFocusQuestion({
     index: 0,

@@ -185,6 +185,98 @@ h2 {
   margin: -4px 0 14px;
 }
 
+.answer-reason {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 14px;
+  border-left: 4px solid var(--line);
+  background: #f8f6ef;
+  padding: 10px 12px;
+}
+
+.answer-reason.is-correct {
+  border-left-color: var(--accent);
+  background: #eef7f3;
+}
+
+.answer-reason.is-wrong {
+  border-left-color: var(--danger);
+  background: #fbefed;
+}
+
+.answer-reason p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.answer-reason-title,
+.selected-answer-line,
+.option-reasons-title {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.selected-answer-line {
+  color: var(--danger);
+}
+
+.option-reasons {
+  display: grid;
+  gap: 9px;
+  margin: 0 0 14px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.option-reasons-title {
+  margin: 0;
+  color: var(--ink);
+}
+
+.option-reason-row {
+  display: grid;
+  gap: 5px;
+  border-left: 3px solid var(--line);
+  padding-left: 10px;
+}
+
+.option-reason-row.is-correct {
+  border-left-color: var(--accent);
+}
+
+.option-reason-row.is-selected-wrong {
+  border-left-color: var(--danger);
+}
+
+.option-reason-row p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.option-reason-head {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.option-reason-head strong {
+  color: var(--ink);
+}
+
+.option-reason-head span {
+  overflow-wrap: anywhere;
+}
+
+.option-reason-head em {
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 800;
+}
+
 .pos-list {
   display: grid;
   gap: 6px;

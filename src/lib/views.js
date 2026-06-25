@@ -19,6 +19,31 @@ function answerLabel(index, choices) {
   return `${String.fromCharCode(65 + index)}. ${choices[index]}`;
 }
 
+function normalizeReason(reason) {
+  if (!reason) return { zh: "", ja: "" };
+  if (typeof reason === "string") return { zh: reason, ja: "" };
+  return {
+    zh: reason.zh || "",
+    ja: reason.ja || ""
+  };
+}
+
+function getChoiceReason(item, index) {
+  const reasons = Array.isArray(item.choiceExplanations) ? item.choiceExplanations : [];
+  const reason = normalizeReason(reasons[index]);
+  if (reason.zh || reason.ja) return reason;
+  if (index === item.answer) {
+    return {
+      zh: item.explanationZh || "呢個選項符合句子或文章內容。",
+      ja: item.explanationJa || "この選択肢が文脈に合います。"
+    };
+  }
+  return {
+    zh: "呢個選項不符合句子或文章內容。",
+    ja: "この選択肢は文脈に合いません。"
+  };
+}
+
 function choiceClass(session, index) {
   const classes = ["choice"];
   if (session.selected === index) classes.push("is-selected");
@@ -59,6 +84,56 @@ function renderWordFamily(item) {
 function renderPronunciationButton(item) {
   if (item.section !== "vocabulary" || !item.word) return "";
   return `<button type="button" class="speak-button secondary" data-action="speak-word" data-word="${escapeHtml(item.word)}">聽讀音</button>`;
+}
+
+function renderAnswerReason(session, choices) {
+  const item = session.item;
+  const selectedAnswer = answerLabel(session.selected, choices);
+  const correctReason = getChoiceReason(item, item.answer);
+  const selectedReason = getChoiceReason(item, session.selected);
+  const title = session.isCorrect ? "解題重點" : "點解錯";
+  const body = session.isCorrect ? correctReason : selectedReason;
+  const selectedLine = !session.isCorrect && selectedAnswer
+    ? `<p class="selected-answer-line">你揀咗：${escapeHtml(selectedAnswer)}</p>`
+    : "";
+  return `
+    <div class="answer-reason ${session.isCorrect ? "is-correct" : "is-wrong"}">
+      <p class="answer-reason-title">${title}</p>
+      ${selectedLine}
+      <p>${escapeHtml(body.zh)}</p>
+      ${body.ja ? `<p class="muted">${escapeHtml(body.ja)}</p>` : ""}
+    </div>
+  `;
+}
+
+function renderOptionReasons(session, choices) {
+  const item = session.item;
+  if (!Array.isArray(choices) || choices.length === 0) return "";
+  return `
+    <div class="option-reasons" aria-label="Choice explanations">
+      <p class="option-reasons-title">每個選項點解啱／唔啱</p>
+      ${choices.map((choice, index) => {
+        const reason = getChoiceReason(item, index);
+        const isCorrect = index === item.answer;
+        const isSelectedWrong = session.selected === index && !session.isCorrect;
+        const stateLabel = isCorrect ? "正解" : isSelectedWrong ? "你揀咗" : "不適合";
+        const rowClasses = ["option-reason-row"];
+        if (isCorrect) rowClasses.push("is-correct");
+        if (isSelectedWrong) rowClasses.push("is-selected-wrong");
+        return `
+          <div class="${rowClasses.join(" ")}">
+            <div class="option-reason-head">
+              <strong>${String.fromCharCode(65 + index)}</strong>
+              <span>${escapeHtml(choice)}</span>
+              <em>${stateLabel}</em>
+            </div>
+            <p>${escapeHtml(reason.zh)}</p>
+            ${reason.ja ? `<p class="muted">${escapeHtml(reason.ja)}</p>` : ""}
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
 }
 
 export function renderAppShell(activeTab, bodyHtml) {
@@ -136,6 +211,8 @@ export function renderFocusQuestion(session) {
             ${renderPronunciationButton(item)}
             ${renderPartsOfSpeech(item)}
             ${renderWordFamily(item)}
+            ${renderAnswerReason(session, choices)}
+            ${renderOptionReasons(session, choices)}
             <p>${escapeHtml(session.explanationZh || "")}</p>
             <p class="muted">${escapeHtml(session.explanationJa || "")}</p>
             <p class="tag">${escapeHtml(item.category || item.section)}</p>
