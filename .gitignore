@@ -1,5 +1,7 @@
 .DS_Store
 .superpowers/
+.playwright-mcp/
+console-toeic.log
+toeic-*.png
 node_modules/
 dist/
-
