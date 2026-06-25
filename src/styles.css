@@ -153,6 +153,23 @@ h2 {
   font-weight: 700;
 }
 
+.focus-screen {
+  padding-bottom: 24px;
+}
+
+.focus-screen h1 {
+  overflow-wrap: anywhere;
+}
+
+.focus-screen > button[data-action="next-question"] {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.today > button[data-action="start-focus"] {
+  width: 100%;
+}
+
 @media (min-width: 760px) {
   .app-shell {
     padding-right: 24px;
