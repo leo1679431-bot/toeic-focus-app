@@ -1,5 +1,5 @@
 import { buildDailyTask, validateQuestionBank } from "./lib/content.js";
-import { loadProgress, recordAttempt, saveProgress } from "./lib/progress.js";
+import { completeDailyTask, loadProgress, recordAttempt, saveProgress } from "./lib/progress.js";
 import { recommendDifficulty, summarizeWeek } from "./lib/scoring.js";
 import {
   renderAppShell,
@@ -123,6 +123,10 @@ function answerCurrentQuestion(selected) {
 function nextQuestion() {
   if (!focusSession) return;
   if (focusSession.index + 1 >= focusSession.items.length) {
+    const summary = summarizeWeek(progress, progress.currentWeek);
+    const recommendation = recommendDifficulty(summary);
+    progress = completeDailyTask(progress, summary, recommendation);
+    saveProgress(window.localStorage, progress);
     focusSession = null;
     route = "progress";
     render();

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  completeDailyTask,
   createInitialProgress,
   loadProgress,
   markMistakeReview,
@@ -74,4 +75,22 @@ test("saveProgress and loadProgress round trip through storage", () => {
   });
   assert.equal(saveProgress(storage, progress), true);
   assert.deepEqual(loadProgress(storage), progress);
+});
+
+test("completeDailyTask advances day and stores weekly summary on day 7", () => {
+  const progress = {
+    ...createInitialProgress(),
+    currentWeek: 1,
+    currentDay: 7,
+    preferredDifficulty: 1
+  };
+  const next = completeDailyTask(
+    progress,
+    { weekNumber: 1, accuracy: 0.82, weakestCategory: "preposition" },
+    { action: "increase", nextDifficultyDelta: 1 }
+  );
+  assert.equal(next.currentWeek, 2);
+  assert.equal(next.currentDay, 1);
+  assert.equal(next.preferredDifficulty, 2);
+  assert.equal(next.weeklySummaries.length, 1);
 });

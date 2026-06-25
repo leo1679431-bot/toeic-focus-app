@@ -65,3 +65,24 @@ export function loadProgress(storage) {
     return createInitialProgress();
   }
 }
+
+export function completeDailyTask(progress, summary, recommendation) {
+  const next = structuredClone(progress);
+  next.completedDailyTasks.push({
+    weekNumber: progress.currentWeek,
+    dayNumber: progress.currentDay,
+    completedAt: new Date().toISOString()
+  });
+  if (progress.currentDay >= 7) {
+    next.weeklySummaries.push(summary);
+    next.currentWeek += 1;
+    next.currentDay = 1;
+    next.preferredDifficulty = Math.max(
+      1,
+      Math.min(3, next.preferredDifficulty + recommendation.nextDifficultyDelta)
+    );
+  } else {
+    next.currentDay += 1;
+  }
+  return next;
+}
