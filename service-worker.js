@@ -1,10 +1,11 @@
-const CACHE_NAME = "toeic-focus-shell-v2";
+const CACHE_NAME = "toeic-focus-shell-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
   "./src/styles.css",
   "./src/app.js",
+  "./src/lib/grammar-usage.js",
   "./src/lib/speech.js"
 ];
 

@@ -1,4 +1,5 @@
 import { buildDailyTask, validateQuestionBank } from "./lib/content.js";
+import { getGrammarChoiceUsage } from "./lib/grammar-usage.js";
 import { completeDailyTask, loadProgress, recordAttempt, saveProgress } from "./lib/progress.js";
 import { recommendDifficulty, summarizeWeek } from "./lib/scoring.js";
 import { primeSpeechSynthesis, speakEnglishWord, speechButtonLabels } from "./lib/speech.js";
@@ -207,9 +208,10 @@ function withChoiceExplanations(item) {
         zh: "呢個選項不合句子結構或意思。",
         ja: "この選択肢は文の構造、または意味に合いません。"
       };
+      const usage = getGrammarChoiceUsage(choice);
       return {
-        zh: `「${choice}」唔啱：${reason.zh}`,
-        ja: `「${choice}」は不適切です。${reason.ja}`
+        zh: `「${choice}」唔啱：${reason.zh} ${usage.zh}`,
+        ja: `「${choice}」は不適切です。${reason.ja} ${usage.ja}`
       };
     })
   };
